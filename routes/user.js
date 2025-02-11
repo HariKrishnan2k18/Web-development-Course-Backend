@@ -9,7 +9,7 @@ const writeUsers = users =>
 
 const readUsers = () => JSON.parse(fs.readFileSync(FILE_PATH, "utf-8")).users;
 
-res.get("/", (req, res) => res.json({ message: "Hello" }).status(200));
+router.get("/", (req, res) => res.json({ message: "Hello" }).status(200));
 
 router.post("/", async (req, res) => {
   const { user, password } = req.body;
