@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "user": "Hari",
+      "password": "Hari",
+      "courses": [
+        {
+          "id": 1,
+          "courseName": "JavaScript Data Structures and Algorithms",
+          "current_video": {
+            "mimeType": "video/mp4",
+            "id": "125wqISARWBY_qlnGlNQS0Wo5suZRDugj",
+            "name": "3. Intro to Linear Search.mp4"
+          },
+          "current_folder": {
+            "mimeType": "application/vnd.google-apps.folder",
+            "id": "1-BxHWbjAmBf_jOZakw5pytQRj0Kc17s9",
+            "name": "10. Searching Algorithms"
+          }
+        },
+        {
+          "id": 3,
+          "courseName": "Ultimate AWS Certified Developer Associate 2023 NEW DVA-C02",
+          "current_folder": {
+            "mimeType": "application/vnd.google-apps.folder",
+            "id": "14R_enhBvUSOwEbIYri0GBL5gf4rTUsUo",
+            "name": "3 - Getting started with AWS"
+          },
+          "current_video": {
+            "mimeType": "video/mp4",
+            "id": "1ONqw1MhXfLTHRBhanBY2v72k0DQf3XlM",
+            "name": "8 - AWS Cloud Overview Regions AZ.mp4"
+          }
+        }
+      ]
+    }
+  ]
+}
