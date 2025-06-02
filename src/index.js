@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.js";
 import connectDB from "./Database/config.js";
+import courseRouter from "./routes/courseDetails.js"
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ app.use(
 );
 
 app.use("/users", userRouter);
+app.use("/coursedetails", courseRouter)
 
 connectDB();
 

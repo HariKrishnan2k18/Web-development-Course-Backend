@@ -15,9 +15,6 @@ const connectDB = async (req, res) => {
           .listCollections()
           .toArray();
         const collectionNames = collections.map(col => col.name);
-        // const count = await mongoose.connection.db
-        //   .collection("BooksList")
-        //   .countDocuments();
         console.log({ collectionNames });
       });
     console.log("MongoDB Connected Successfully!");
