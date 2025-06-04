@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
   const { user, password } = req.body;
   const userCollection = await UsersCollection.findOne({});
   let data = userCollection.users.find(
-    e => e.user === user && e.password === password
+    (e) => e.user === user && e.password === password
   );
   if (data) {
     const { _id, password, ...remaining } = data.toObject();
@@ -20,21 +20,41 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
+  const userId = req.params.id;
+  const course = req.body.courses;
+
   try {
-    const { id } = req.params;
-    const { courses } = req.body;
-    const userCollection = await UsersCollection.findOneAndUpdate(
-      { "users.id": id },
-      { $set: { "users.$.courses": courses } },
-      { new: true }
+    let doc = await UsersCollection.findOneAndUpdate(
+      {
+        "users.id": userId,
+        "users.courses.id": course.id,
+      },
+      {
+        $set: {
+          "users.$[u].courses.$[c]": course,
+        },
+      },
+      {
+        new: true,
+        arrayFilters: [{ "u.id": userId }, { "c.id": course.id }],
+      }
     );
-    if (userCollection) {
-      res.json({ message: "Updated Data", userCollection }).status(200);
-    } else {
-      res.status(404).json({ message: "User Not Found" });
+
+    if (!doc) {
+      doc = await UsersCollection.findOneAndUpdate(
+        { "users.id": userId },
+        { $push: { "users.$.courses": course } },
+        { new: true }
+      );
     }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+
+    if (!doc) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Courses updated", data: doc });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
