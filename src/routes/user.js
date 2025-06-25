@@ -5,6 +5,38 @@ const router = express.Router();
 
 router.get("/", (req, res) => res.json({ message: "Hello" }).status(200));
 
+router.post("/register", async (req, res) => {
+  const { first_name, last_name, user_name, email, country, number, password } =
+    req.body;
+  const userCollection = await UsersCollection.findOne({});
+  let data = userCollection.users.find(
+    (e) => e.user === user_name || e.email === email || e.number === number
+  );
+  if (data) {
+    res.json({ message: "User Already exist" }).status(500);
+  } else {
+    const object = {
+      user: user_name,
+      courses: [],
+    };
+    await UsersCollection.updateOne({
+      $addToSet: {
+        users: {
+          id: userCollection.users.length + 1,
+          firstName: first_name,
+          lastName: last_name,
+          email: email,
+          password: password,
+          country: country,
+          number: number,
+          ...object,
+        },
+      },
+    });
+    res.json({ message: object }).status(200);
+  }
+});
+
 router.post("/", async (req, res) => {
   const { user, password } = req.body;
   const userCollection = await UsersCollection.findOne({});
@@ -22,37 +54,31 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   const userId = req.params.id;
   const course = req.body.courses;
+  const courseId = course.id;
 
   try {
-    let doc = await UsersCollection.findOneAndUpdate(
-      {
-        "users.id": userId,
-        "users.courses.id": course.id,
-      },
-      {
-        $set: {
-          "users.$[u].courses.$[c]": course,
-        },
-      },
-      {
-        new: true,
-        arrayFilters: [{ "u.id": userId }, { "c.id": course.id }],
-      }
-    );
-
-    if (!doc) {
-      doc = await UsersCollection.findOneAndUpdate(
-        { "users.id": userId },
-        { $push: { "users.$.courses": course } },
-        { new: true }
-      );
-    }
+    const doc = await UsersCollection.findOne({ "users.id": userId });
 
     if (!doc) {
       return res.status(404).json({ message: "User not found" });
     }
+    const userIndex = doc.users.findIndex((u) => u.id === userId);
+    if (userIndex === -1) {
+      return res.status(404).json({ message: "User not found in array" });
+    }
 
-    res.status(200).json({ message: "Courses updated", data: doc });
+    const user = doc.users[userIndex];
+    const courseIndex = user.courses.findIndex((c) => c.id == courseId);
+    if (courseIndex !== -1) {
+      user.courses[courseIndex] = course;
+    } else {
+      user.courses.push(course);
+    }
+    await doc.save();
+    res.status(200).json({
+      message: "Course added or updated successfully",
+      data: doc.users[userIndex],
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
